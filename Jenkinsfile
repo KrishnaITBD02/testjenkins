@@ -3,7 +3,7 @@ node {
     checkout scm
   }
   stage('Print hello'){
-    print("Hello")
+    python3 test.py
   }
   stage('SonarQube Analysis') {
     def scannerHome = tool 'sonarqube';
