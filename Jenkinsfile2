@@ -1,0 +1,29 @@
+pipeline {
+    agent any
+    tools {
+        // Specify the SonarQube Scanner tool to use
+        sonarqube 'sonarqube'
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                // Checkout the Git repository
+                checkout scm
+            }
+        }
+        stage('Build') {
+            steps {
+                // Build the code
+                sh 'mvn clean install'
+            }
+        }
+        stage('SonarQube Analysis') {
+            steps {
+                // Analyze the code using the SonarQube Scanner
+                withSonarQubeEnv('sonarqube') {
+                    sh "mvn sonar:sonar -Dsonar.branch.name=${BRANCH_NAME}"
+                }
+            }
+        }
+    }
+}
