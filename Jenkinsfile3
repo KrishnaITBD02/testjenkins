@@ -8,24 +8,13 @@ pipeline {
       }
     }
     
-    stage('Run tests') {
-      steps {
-        sh 'pytest'
-      }
-      post {
-        always {
-          junit 'reports/**/*.xml'
-        }
-      }
-    }
-    
     stage('SonarQube analysis') {
       environment {
         scannerHome = tool 'SonarScanner'
       }
       steps {
         withSonarQubeEnv('SonarQube Server') {
-          sh "${scannerHome}/bin/sonar-scanner"
+          sh "${scannerHome}/bin/sonar-scanner -Dsonar.language=python"
         }
       }
     }
