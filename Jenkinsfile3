@@ -1,0 +1,50 @@
+pipeline {
+  agent any
+  
+  stages {
+    stage('Checkout') {
+      steps {
+        checkout scm
+      }
+    }
+    
+    stage('Install dependencies') {
+      steps {
+        sh 'pip install -r requirements.txt'
+      }
+    }
+    
+    stage('Run tests') {
+      steps {
+        sh 'pytest'
+      }
+      post {
+        always {
+          junit 'reports/**/*.xml'
+        }
+      }
+    }
+    
+    stage('SonarQube analysis') {
+      environment {
+        scannerHome = tool 'SonarScanner'
+      }
+      steps {
+        withSonarQubeEnv('SonarQube Server') {
+          sh "${scannerHome}/bin/sonar-scanner"
+        }
+      }
+    }
+  }
+  
+  post {
+    always {
+      script {
+        def qg = waitForQualityGate()
+        if (qg.status != 'OK') {
+          error "Pipeline failed due to quality gate failure: ${qg.status}"
+        }
+      }
+    }
+  }
+}
