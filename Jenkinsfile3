@@ -10,10 +10,10 @@ pipeline {
     
     stage('SonarQube analysis') {
       environment {
-        scannerHome = tool 'SonarScanner'
+        scannerHome = tool 'sonarqube'
       }
       steps {
-        withSonarQubeEnv('sonarqube') {
+        withSonarQubeEnv('SonarQube Server') {
           sh "${scannerHome}/bin/sonar-scanner -Dsonar.language=python"
         }
       }
