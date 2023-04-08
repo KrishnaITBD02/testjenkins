@@ -1,30 +1,26 @@
 pipeline {
   agent any
+
   stages {
     stage('SonarQube analysis') {
+      environment {
+        scannerHome = tool '[sonar server name]'
+      }
       steps {
-        withSonarQubeEnv('SonarQube') { // Replace with your SonarQube server name
-          sh 'sonar-scanner' // Run SonarQube analysis
+        withSonarQubeEnv('[Sonar Environment name]') {
+          sh "${scannerHome}/bin/sonar-scanner -Dsonar.language=python"
+          sonar.python.version=3.8
         }
       }
-    }
-  }
-  post {
-    always {
-      // Create build directory if it doesn't exist
-      sh 'mkdir -p build'
-      // Archive build artifacts, such as coverage reports
-      archiveArtifacts 'build/**'
-    }
-    success {
-      // Publish analysis results to SonarQube server
-      withSonarQubeEnv('SonarQube') { // Replace with your SonarQube server name
-        sh 'sonar-scanner -Dsonar.projectKey=mSOnar-Jenkins' // Replace with your project key
+      post {
+        always {
+          script {
+            if (currentBuild.result == 'FAILURE') {
+              error "SonarQube analysis failed"
+            }
+          }
+        }
       }
-    }
-    failure {
-      // Fail the build if quality check fails
-      error 'SonarQube quality check failed. Please fix the issues and try again.'
     }
   }
 }
