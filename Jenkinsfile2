@@ -11,6 +11,8 @@ pipeline {
   }
   post {
     always {
+      // Create build directory if it doesn't exist
+      sh 'mkdir -p build'
       // Archive build artifacts, such as coverage reports
       archiveArtifacts 'build/**'
     }
