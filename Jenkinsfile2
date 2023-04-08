@@ -1,29 +1,28 @@
 pipeline {
-    agent any
-    tools {
-        // Specify the SonarQube Scanner tool to use
-        sonarqube 'sonarqube'
+  agent any
+  stages {
+    stage('SonarQube analysis') {
+      steps {
+        withSonarQubeEnv('SonarQube') { // Replace with your SonarQube server name
+          sh 'sonar-scanner' // Run SonarQube analysis
+        }
+      }
     }
-    stages {
-        stage('Checkout') {
-            steps {
-                // Checkout the Git repository
-                checkout scm
-            }
-        }
-        stage('Build') {
-            steps {
-                // Build the code
-                sh 'mvn clean install'
-            }
-        }
-        stage('SonarQube Analysis') {
-            steps {
-                // Analyze the code using the SonarQube Scanner
-                withSonarQubeEnv('sonarqube') {
-                    sh "mvn sonar:sonar -Dsonar.branch.name=${BRANCH_NAME}"
-                }
-            }
-        }
+  }
+  post {
+    always {
+      // Archive build artifacts, such as coverage reports
+      archiveArtifacts 'build/**'
     }
+    success {
+      // Publish analysis results to SonarQube server
+      withSonarQubeEnv('SonarQuber') { // Replace with your SonarQube server name
+        sh 'sonar-scanner -Dsonar.projectKey=mSOnar-Jenkins' // Replace with your project key
+      }
+    }
+    failure {
+      // Fail the build if quality check fails
+      error 'SonarQube quality check failed. Please fix the issues and try again.'
+    }
+  }
 }
