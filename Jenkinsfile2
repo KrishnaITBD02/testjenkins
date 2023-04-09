@@ -5,25 +5,27 @@ pipeline {
     stage('SonarQube analysis') {
       environment {
         scannerHome = tool '[sonar server name]'
-        // Add the sonar.python.version property as an environment variable
-        // inside the SonarQube analysis stage
-        SONAR_SCANNER_OPTS = "-Dsonar.python.version=3.8"
       }
       steps {
         withSonarQubeEnv('[Sonar Environment name]') {
-          sh "${scannerHome}/bin/sonar-scanner -Dsonar.language=python $SONAR_SCANNER_OPTS"
+          sh "${scannerHome}/bin/sonar-scanner -Dsonar.language=python"
+          script {
+            env.sonar.python.version='3.8'
+          }
         }
       }
     }
-    stage("Quality Gate") {
+    stage('Quality Gate') {
       steps {
         timeout(time: 1, unit: 'HOURS') {
-          def qg = waitForQualityGate()
-          if (qg.status != 'OK') {
-            error "Pipeline aborted due to quality gate failure: ${qg.status}"
+          script {
+            def qg = waitForQualityGate()
+            if (qg.status != 'OK') {
+              error "Pipeline aborted due to quality gate failure: ${qg.status}"
+            }
           }
         }
-      }        
+      }
     }
   }
 }
