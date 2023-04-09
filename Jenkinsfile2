@@ -9,7 +9,7 @@ pipeline {
       steps {
         withSonarQubeEnv('[Sonar Environment name]') {
           sh "${scannerHome}/bin/sonar-scanner -Dsonar.language=python"
-          sonar.python.version=3.8
+          //sonar.python.version=3.8
         }
         waitForQualityGate abortPipeline: false, credentialsId: 'SonarQube'
       }
