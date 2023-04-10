@@ -1,7 +1,6 @@
 pipeline {
 agent any
 stages {
-
     stage('SonarQube analysis') {
         environment {
             scannerHome = tool '[sonar server name]'
@@ -11,8 +10,6 @@ stages {
                 sh "${scannerHome}/bin/sonar-scanner -Dsonar.language=python -Dsonar.python.version=3.8"
             }
         }
-    }
-
     stage("Quality Gate") {
         timeout(time: 1, unit: 'HOURS') {
             def qg = waitForQualityGate()
