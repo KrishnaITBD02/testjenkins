@@ -18,7 +18,7 @@ pipeline {
         failure {
             emailext body: "The SonarQube quality check failed. Please see the attached logs for more information.",
                      subject: "SonarQube Quality Check Failed",
-                     to: "your.email@example.com",
+                     to: "Krishnasharma2910.ks@gmail.com",
                      attachmentsPattern: "**/target/sonar/log/*.log"
         }
     }
