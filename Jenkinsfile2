@@ -27,7 +27,6 @@ pipeline {
             }
         }
     }
-}
     post {
         failure {
             emailext body: "The SonarQube quality check failed. Please see the attached logs for more information.",
