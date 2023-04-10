@@ -1,0 +1,25 @@
+pipeline {
+    agent any
+    stages {
+        stage('Build') {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('SonarQube Server') {
+                    sh 'mvn sonar:sonar'
+                }
+            }
+        }
+    }
+    post {
+        failure {
+            emailext body: "The SonarQube quality check failed. Please see the attached logs for more information.",
+                     subject: "SonarQube Quality Check Failed",
+                     to: "your.email@example.com",
+                     attachmentsPattern: "**/target/sonar/log/*.log"
+        }
+    }
+}
