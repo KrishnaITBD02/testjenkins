@@ -1,25 +1,31 @@
-name: Lint Code Base
+name: Lint Django Codebase
 
-on: [push, pull_request]
+on:
+  push:
+  pull_request:
 
 jobs:
-  build:
-    name: Lint Code Base
+  lint:
+    name: Lint Django Codebase
     runs-on: ubuntu-latest
-
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-      - name: Checkout Code
-        uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v2
         with:
-          fetch-depth: 0
-      - name: Install Black
-        run: pip install black
-      - name: Run black to format code
+          python-version: 3.8
+
+      - name: Install dependencies
         run: |
-            black --diff --check .
-      - name: Lint Code Base
+          pip install black pylint
+
+      - name: Lint Django Codebase
         uses: github/super-linter@v4
         env:
+          VALIDATE_ALL_CODEBASE: true
           VALIDATE_PYTHON_BLACK: true
+          VALIDATE_PYTHON_PYLINT: true
+          PYTHON_BLACK_LINE_LENGTH: 120
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
