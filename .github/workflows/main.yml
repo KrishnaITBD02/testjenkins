@@ -15,11 +15,6 @@ jobs:
           fetch-depth: 0
       - name: Install Black
         run: pip install black
-
-      - name: Lint with Black
-        run: black /github/workspace/sonartestproject/simple-django-login-and-register/source/main/views.py
-     
-
       - name: Lint Code Base
         uses: github/super-linter@v4
         env:
