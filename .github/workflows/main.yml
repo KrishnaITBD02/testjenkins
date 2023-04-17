@@ -17,4 +17,4 @@ jobs:
           pip install pylint
          ## pip install -r requirements.txt
       - name: Run Pylint
-        run: pylint --load-plugins pylint_django $(find myproject/ -name "*.py")
+        run: pylint --load-plugins pylint_django $(find testjenkins/ -name "*.py")
