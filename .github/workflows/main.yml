@@ -1,21 +1,22 @@
-name: Pylint check
+name: Lint Code Base
 
-on: [pull_request]
+on: [push, pull_request]
 
 jobs:
-  pylint:
+  build:
+    name: Lint Code Base
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python
-        uses: actions/setup-python@v2
+
+      - name: Checkout Code
+        uses: actions/checkout@v3
         with:
-          python-version: 3.8
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install pylint
-          pip install pylint_django
-         ## pip install -r requirements.txt
-      - name: Run Pylint
-        run: pylint --load-plugins pylint_django $(find ./ -name "*.py")
+          fetch-depth: 0
+
+      - name: Lint Code Base
+        uses: github/super-linter@v4
+        env:
+          VALIDATE_ALL_CODEBASE: true
+          VALIDATE_JAVASCRIPT_ES: false
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
