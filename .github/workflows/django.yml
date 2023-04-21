@@ -1,23 +1,25 @@
-name: Django CI
-
-on:
-  push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
+name: Security Checks
+on: [push]
 
 jobs:
-  build:
-
+  test:
+    name: OWASP ZAP SCANS
     runs-on: ubuntu-latest
-    strategy:
-      max-parallel: 4
-      matrix:
-        python-version: [3.7, 3.8, 3.9]
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Super-Linter
-      uses: github/super-linter@v5.0.0
-      env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+       - uses: actions/checkout@v2
+         with:
+          ref: master
+       - name: Building Docker Node-Goat Image
+         run: docker-compose build
+       - name: Launching the app
+         run: docker-compose up --detach
+
+       - name: OWASP ZAP
+         uses: zaproxy/action-baseline@v0.4.0
+         with:
+           # Target URL
+           target: "http://localhost:8000"
+           fail_action: false
+           token: $
+           issue_title: Security Tests
